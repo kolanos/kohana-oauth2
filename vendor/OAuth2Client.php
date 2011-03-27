@@ -293,7 +293,7 @@ abstract class OAuth2Client {
       // grant_type == authorization_code.
       if (!$session && $this->getVariable('code')) {
         $access_token = $this->getAccessTokenFromAuthorizationCode($this->getVariable('code'));
-        $session = $this->getSessionObject($access_token);
+		$session = $this->getSessionObject($access_token);
         $session = $this->validateSessionObject($session);
       }
 
