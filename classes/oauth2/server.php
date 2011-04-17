@@ -33,7 +33,7 @@
  * @author Updated to draft v10 by Aaron Parecki <aaron@parecki.com>.
  * @author Debug, coding style clean up and documented by Edison Wong <hswong3i@pantarei-design.com>.
  */
-abstract class OAuth2 {
+abstract class OAuth2_Server extends Controller {
 
 	/**
 	 * The default duration in seconds of the access token lifetime.
@@ -203,7 +203,7 @@ abstract class OAuth2 {
 	 *
 	 * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-3
 	 */
-	const HTTP_FOUND = '302 Found';
+	const HTTP_FOUND = 302;
 
 	/**
 	 * "Bad Request" HTTP status code.
@@ -211,7 +211,7 @@ abstract class OAuth2 {
 	 * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-4.3
 	 * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-5.2.1
 	 */
-	const HTTP_BAD_REQUEST = '400 Bad Request';
+	const HTTP_BAD_REQUEST = 400;
 
 	/**
 	 * "Unauthorized" HTTP status code.
@@ -219,14 +219,14 @@ abstract class OAuth2 {
 	 * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-4.3
 	 * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-5.2.1
 	 */
-	const HTTP_UNAUTHORIZED = '401 Unauthorized';
+	const HTTP_UNAUTHORIZED = 401;
 
 	/**
 	 * "Forbidden" HTTP status code.
 	 *
 	 * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-5.2.1
 	 */
-	const HTTP_FORBIDDEN = '403 Forbidden';
+	const HTTP_FORBIDDEN = 403;
 
 	/**
 	 * @}
@@ -1168,7 +1168,7 @@ abstract class OAuth2 {
 		$token = $this->create_access_token($client[0], $input['scope']);
 
 		$this->send_json_headers();
-		echo json_encode($token);
+		$this->response->body(json_encode($token));
 	}
 
 	/**
@@ -1413,9 +1413,7 @@ abstract class OAuth2 {
 	 */
 	private function do_redirect_uri_callback($redirect_uri, $params)
 	{
-		header('HTTP/1.1 ' . OAuth2::HTTP_FOUND);
-		header('Location: ' . $this->build_uri($redirect_uri, $params));
-		exit;
+		$this->request->redirect($this->build_uri($redirect_uri, $params), OAuth2::HTTP_FOUND);	
 	}
 
 	/**
@@ -1601,8 +1599,9 @@ abstract class OAuth2 {
 	 */
 	private function send_json_headers()
 	{
-		header('Content-Type: application/json');
-		header('Cache-Control: no-store');
+		$this->response
+			->headers('Content-Type', 'application/json')
+			->headers('Cache-Control', 'no-store');
 	}
 
 	/**
@@ -1675,11 +1674,9 @@ abstract class OAuth2 {
 		if ($this->get('display_error') and $error_uri)
 			$result['error_uri'] = $error_uri;
 
-		header('HTTP/1.1 ' . $http_status_code);
+		$this->response->status($http_status_code);
 		$this->send_json_headers();
-		echo json_encode($result);
-
-		exit;
+		$this->response->body(json_encode($result));
 	}
 
 	/**
@@ -1716,7 +1713,7 @@ abstract class OAuth2 {
 	{
 		$realm = $realm === NULL ? $this->get_default_authentication_realm() : $realm;
 
-		$result = "WWW-Authenticate: OAuth realm='" . $realm . "'";
+		$result = "OAuth realm='" . $realm . "'";
 
 		if ($error)
 			$result .= ", error='" . $error . "'";
@@ -1730,9 +1727,8 @@ abstract class OAuth2 {
 		if ($scope)
 			$result .= ", scope='" . $scope . "'";
 
-		header('HTTP/1.1 ' . $http_status_code);
-		header($result);
-
-		exit;
+		$this->response
+			->status($http_status_code)
+			->headers('WWW-Authenticate', $result);
 	}
 }

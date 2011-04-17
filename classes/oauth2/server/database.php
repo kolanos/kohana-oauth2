@@ -1,9 +1,6 @@
 <?php
 
-include_once Kohana::find_file('vendor', 'OAuth2');
-include_once Kohana::find_file('vendor', 'OAuth2Exception');
-
-class OAuth2_Kohana extends OAuth2 {
+class OAuth2_Server_Database extends OAuth2_Server {
 	
 	protected function getSupportedScopes()
 	{

@@ -8,7 +8,7 @@
  *
  * @sa <a href="https://github.com/facebook/php-sdk">Facebook PHP SDK</a>.
  */
-abstract class OAuth2Client {
+abstract class OAuth2_Client {
 
 	/**
 	 * The default Cache Lifetime (in seconds).

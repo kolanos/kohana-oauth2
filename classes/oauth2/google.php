@@ -1,18 +1,15 @@
 <?php
 
-include_once Kohana::find_file('vendor', 'OAuth2Client');
-include_once Kohana::find_file('vendor', 'OAuth2Exception');
-
-class OAuth2_Google extends OAuth2Client {
+class OAuth2_Google extends OAuth2_Client {
 
 	protected $config = array(
-		'base_uri' => 'https://www.google.com/m8/feeds',
-		'authorize_uri' => 'https://accounts.google.com/o/oauth2/auth',
-		'access_token_uri' => 'https://accounts.google.com/o/oauth2/token',
-		'client_id' => '744765340221.apps.googleusercontent.com',
-		'client_secret' => 'tpRiq5/xeXbD3l3gxpPRi/ko',
-		'cookie_support' => TRUE,
-//		'services_uri' => 'o',
+		'base_uri'			=> 'https://www.google.com/m8/feeds',
+		'authorize_uri'		=> 'https://accounts.google.com/o/oauth2/auth',
+		'access_token_uri'	=> 'https://accounts.google.com/o/oauth2/token',
+		'client_id'			=> '744765340221.apps.googleusercontent.com',
+		'client_secret'		=> 'tpRiq5/xeXbD3l3gxpPRi/ko',
+		'cookie_support'	=> TRUE,
+		//'services_uri'	=> 'o'
 	);
 
 	public function __construct($config = array())
