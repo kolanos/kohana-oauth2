@@ -11,9 +11,9 @@ class OAuth2_Kohana extends OAuth2 {
 	}
 
 	/**
-	 * Implements OAuth2::checkClientCredentials().
+	 * Implements OAuth2::check_client_credentials().
 	 */
-	protected function checkClientCredentials($client_id, $client_secret = NULL)
+	protected function check_client_credentials($client_id, $client_secret = NULL)
 	{
 		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Kohana::checkClientCredentials.");
 
@@ -44,9 +44,9 @@ class OAuth2_Kohana extends OAuth2 {
 	}
 
 	/**
-	 * Implements OAuth2::getRedirectUri().
+	 * Implements OAuth2::get_redirect_uri().
 	 */
-	protected function getRedirectUri($client_id)
+	protected function get_redirect_uri($client_id)
 	{
 		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Kohana::getRedirectUri.");
 
@@ -74,11 +74,11 @@ class OAuth2_Kohana extends OAuth2 {
 	}
 
 	/**
-	 * Implements OAuth2::getAccessToken().
+	 * Implements OAuth2::get_access_token().
 	 */
-	protected function getAccessToken($oauth_token)
+	protected function get_access_token($oauth_token)
 	{
-		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Kohana::getAccessToken.");
+		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Kohana::get_access_token.");
 
 		try
 		{
@@ -97,18 +97,18 @@ class OAuth2_Kohana extends OAuth2 {
 		}
 		catch (Database_Exception $e)
 		{
-			Kohana::$log->add(Log::ERROR, "Unknown error in OAuth2_Kohana::getAccessToken. Message: " . $e->getMessage());
+			Kohana::$log->add(Log::ERROR, "Unknown error in OAuth2_Kohana::get_access_token. Message: " . $e->getMessage());
 
 			return FALSE;
 		}
 	}
 
 	/**
-	 * Implements OAuth2::setAccessToken().
+	 * Implements OAuth2::set_access_token().
 	 */
-	protected function setAccessToken($oauth_token, $client_id, $expires, $scope = NULL)
+	protected function set_access_token($oauth_token, $client_id, $expires, $scope = NULL)
 	{
-		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Kohana::setAccessToken.");
+		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Kohana::set_access_token.");
 
 		try
 		{
@@ -122,14 +122,14 @@ class OAuth2_Kohana extends OAuth2 {
 		}
 		catch (Database_Exception $e)
 		{
-			Kohana::$log->add(Log::ERROR, "Unknown error in OAuth2_Kohana::setAccessToken. Message: " . $e->getMessage());
+			Kohana::$log->add(Log::ERROR, "Unknown error in OAuth2_Kohana::set_access_token. Message: " . $e->getMessage());
 
 			return FALSE;
 		}
 	}
 
 	/**
-	 * Overrides OAuth2::getSupportedGrantTypes().
+	 * Overrides OAuth2::get_supported_grant_types().
 	 * 
 	 * Possible values:
 	 *
@@ -143,9 +143,9 @@ class OAuth2_Kohana extends OAuth2 {
 	 *
 	 * See http://tools.ietf.org/html/draft-ietf-oauth-v2-13 Section 1.4
 	 */
-	protected function getSupportedGrantTypes()
+	protected function get_supported_grant_types()
 	{
-		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Kohana::getSupportedGrantTypes.");
+		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Kohana::get_supported_grant_types.");
 
 		return array(
 			OAUTH2_GRANT_TYPE_AUTH_CODE,
@@ -153,11 +153,11 @@ class OAuth2_Kohana extends OAuth2 {
 	}
 
 	/**
-	 * Overrides OAuth2::getAuthCode().
+	 * Overrides OAuth2::get_auth_code().
 	 */
-	protected function getAuthCode($code)
+	protected function get_auth_code($code)
 	{
-		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Kohana::getAuthCode.");
+		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Kohana::get_auth_code.");
 
 		try
 		{
@@ -176,16 +176,16 @@ class OAuth2_Kohana extends OAuth2 {
 		}
 		catch (Database_Exception $e)
 		{
-			Kohana::$log->add(Log::ERROR, "Unknown error in OAuth2_Kohana::getAuthCode. Message: " . $e->getMessage());
+			Kohana::$log->add(Log::ERROR, "Unknown error in OAuth2_Kohana::get_auth_code. Message: " . $e->getMessage());
 
 			return FALSE;
 		}
 	}
 
 	/**
-	 * Overrides OAuth2::setAuthCode().
+	 * Overrides OAuth2::set_auth_code().
 	 */
-	protected function setAuthCode($code, $client_id, $redirect_uri, $expires, $scope = NULL)
+	protected function set_auth_code($code, $client_id, $redirect_uri, $expires, $scope = NULL)
 	{
 		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Kohana::setAuthCode.");
 

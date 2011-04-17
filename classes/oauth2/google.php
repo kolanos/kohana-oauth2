@@ -4,6 +4,7 @@ include_once Kohana::find_file('vendor', 'OAuth2Client');
 include_once Kohana::find_file('vendor', 'OAuth2Exception');
 
 class OAuth2_Google extends OAuth2Client {
+
 	protected $config = array(
 		'base_uri' => 'https://www.google.com/m8/feeds',
 		'authorize_uri' => 'https://accounts.google.com/o/oauth2/auth',
@@ -21,9 +22,9 @@ class OAuth2_Google extends OAuth2Client {
 		parent::__construct($config);
 	}
 
-	public function getAuthorizeUrl($scope, $response_type = 'code')
+	public function get_authorize_url($scope, $response_type = 'code')
 	{
-		return $this->getVariable('authorize_uri').'?client_id='.$this->getVariable('client_id').'&redirect_uri=http://wk01-lmst.managedit.ie/phostr-api/oauth2/return&response_type='.$response_type.'&scope='.$scope;
+		return $this->get('authorize_uri').'?client_id='.$this->get('client_id').'&redirect_uri=http://wk01-lmst.managedit.ie/phostr-api/oauth2/return&response_type='.$response_type.'&scope='.$scope;
 	}
 
 	/**
@@ -37,13 +38,13 @@ class OAuth2_Google extends OAuth2Client {
 	 * @return
 	 *   The URL for the login flow.
 	 */
-	public function getLoginUri($params = array())
+	public function get_login_uri($params = array())
 	{
-		return $this->getUri(
-			$this->getVariable('authorize_uri'),
+		return $this->get_uri(
+			$this->get('authorize_uri'),
 			array_merge(array(
 				'response_type' => 'code',
-				'client_id' => $this->getVariable('client_id'),
+				'client_id' => $this->get('client_id'),
 				'redirect_uri' => $this->getCurrentUri(),
 				), $params)
 		);
@@ -58,10 +59,10 @@ class OAuth2_Google extends OAuth2Client {
 	 * @return
 	 *   The URL for the logout flow.
 	 */
-	public function getLogoutUri($params = array())
+	public function get_logout_uri($params = array())
 	{
-		return $this->getUri(
-			$this->getVariable('base_uri').'logout',
+		return $this->get_uri(
+			$this->get('base_uri').'logout',
 			array_merge(array(
 				'oauth_token' => $this->getAccessToken(),
 				'redirect_uri' => $this->getCurrentUri(),
