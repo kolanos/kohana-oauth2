@@ -157,8 +157,8 @@ abstract class OAuth2_Client {
 		if ( ! empty($access_token) and isset($access_token['access_token']))
 		{
 			$session['access_token'] = $access_token['access_token'];
-			$session['base_domain'] = $this->get('base_domain', OAuth2Client::DEFAULT_BASE_DOMAIN);
-			$session['expirse'] = isset($access_token['expires_in']) ? time() + $access_token['expires_in'] : time() + $this->get('expires_in', OAuth2Client::DEFAULT_EXPIRES_IN);
+			$session['base_domain'] = $this->get('base_domain', OAuth2_Client::DEFAULT_BASE_DOMAIN);
+			$session['expirse'] = isset($access_token['expires_in']) ? time() + $access_token['expires_in'] : time() + $this->get('expires_in', OAuth2_Client::DEFAULT_EXPIRES_IN);
 			$session['refresh_token'] = isset($access_token['refresh_token']) ? $access_token['refresh_token'] : '';
 			$session['scope'] = isset($access_token['scope']) ? $access_token['scope'] : '';
 			$session['secret'] = md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
@@ -209,7 +209,7 @@ abstract class OAuth2_Client {
 	 * @return
 	 *   The JSON decoded response object.
 	 *
-	 * @throws OAuth2Exception
+	 * @throws OAuth2_Exception
 	 */
 	public function api($path, $method = 'GET', $params = array())
 	{
@@ -237,7 +237,7 @@ abstract class OAuth2_Client {
 		// Results are returned, errors are thrown.
 		if (is_array($result) and isset($result['error']))
 		{
-			$e = new OAuth2Exception($result);
+			$e = new OAuth2_Exception($result);
 
 			switch ($e->get_type())
 			{
@@ -464,7 +464,7 @@ abstract class OAuth2_Client {
 	 * @return
 	 *   The JSON decoded response object.
 	 *
-	 * @throws OAuth2Exception
+	 * @throws OAuth2_Exception
 	 */
 	protected function make_oauth2_request($path, $method = 'GET', $params = array())
 	{
@@ -550,7 +550,7 @@ abstract class OAuth2_Client {
 
 		if ($result === FALSE)
 		{
-			$e = new OAuth2Exception(array(
+			$e = new OAuth2_Exception(array(
 				'code' => curl_errno($ch),
 				'message' => curl_error($ch),
 			));
@@ -624,7 +624,7 @@ abstract class OAuth2_Client {
 		$cookie_name = $this->get_session_cookie_name();
 		$value = 'deleted';
 		$expires = time() - 3600;
-		$base_domain = $this->get('base_domain', OAuth2Client::DEFAULT_BASE_DOMAIN);
+		$base_domain = $this->get('base_domain', OAuth2_Client::DEFAULT_BASE_DOMAIN);
 		
 		if ($session)
 		{
@@ -632,7 +632,7 @@ abstract class OAuth2_Client {
 			$base_domain = isset($session['base_domain']) ? $session['base_domain'] : $base_domain;
 			$expires = isset($session['expires'])
 				? $session['expires'] 
-				: time() + $this->get('expires_in', OAuth2Client::DEFAULT_EXPIRES_IN);
+				: time() + $this->get('expires_in', OAuth2_Client::DEFAULT_EXPIRES_IN);
 		}
 
 		// Prepend dot if a domain is found.

@@ -1,6 +1,6 @@
 <?php
 
-class OAuth2_Google extends OAuth2_Client {
+class OAuth2_Client_Google extends OAuth2_Client {
 
 	protected $config = array(
 		'base_uri'			=> 'https://www.google.com/m8/feeds',
