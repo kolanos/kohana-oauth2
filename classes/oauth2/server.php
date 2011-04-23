@@ -33,7 +33,7 @@
  * @author Updated to draft v10 by Aaron Parecki <aaron@parecki.com>.
  * @author Debug, coding style clean up and documented by Edison Wong <hswong3i@pantarei-design.com>.
  */
-abstract class OAuth2_Server extends Controller {
+abstract class OAuth2_Server {
 
 	/**
 	 * The default duration in seconds of the access token lifetime.
@@ -1167,8 +1167,14 @@ abstract class OAuth2_Server extends Controller {
 
 		$token = $this->create_access_token($client[0], $input['scope']);
 
-		$this->send_json_headers();
-		$this->response->body(json_encode($token));
+		$response = $this->send_json_headers();
+		
+		echo $response
+			->body(json_encode($token))
+			->send_headers()
+			->body();
+		
+		exit;
 	}
 
 	/**
@@ -1413,7 +1419,7 @@ abstract class OAuth2_Server extends Controller {
 	 */
 	private function do_redirect_uri_callback($redirect_uri, $params)
 	{
-		$this->request->redirect($this->build_uri($redirect_uri, $params), OAuth2::HTTP_FOUND);	
+		Request::factory()->redirect($this->build_uri($redirect_uri, $params), OAuth2::HTTP_FOUND);	
 	}
 
 	/**
@@ -1599,7 +1605,7 @@ abstract class OAuth2_Server extends Controller {
 	 */
 	private function send_json_headers()
 	{
-		$this->response
+		return Response::factory()
 			->headers('Content-Type', 'application/json')
 			->headers('Cache-Control', 'no-store');
 	}
@@ -1674,9 +1680,15 @@ abstract class OAuth2_Server extends Controller {
 		if ($this->get('display_error') and $error_uri)
 			$result['error_uri'] = $error_uri;
 
-		$this->response->status($http_status_code);
-		$this->send_json_headers();
-		$this->response->body(json_encode($result));
+		$response = $this->send_json_headers();
+		
+		echo $response
+			->status($http_status_code)
+			->body(json_encode($result))
+			->send_headers()
+			->body();
+		
+		exit;
 	}
 
 	/**
@@ -1727,8 +1739,12 @@ abstract class OAuth2_Server extends Controller {
 		if ($scope)
 			$result .= ", scope='" . $scope . "'";
 
-		$this->response
+		echo Response::factory()
 			->status($http_status_code)
-			->headers('WWW-Authenticate', $result);
+			->headers('WWW-Authenticate', $result)
+			->send_headers()
+			->body();
+
+		exit;
 	}
 }

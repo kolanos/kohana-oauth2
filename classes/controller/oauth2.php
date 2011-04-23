@@ -10,4 +10,5 @@ class Controller_OAuth2 extends Controller {
 
 		$this->oauth = new OAuth2_Server_Database;
 	}
+	
 }

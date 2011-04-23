@@ -1,12 +1,12 @@
 <?php
 
-class Controller_OAuth2_Endpoint extends OAuth2_Server_Database {
+class Controller_OAuth2_Endpoint extends Controller {
 
 	public function action_authorize()
 	{
 		if ($_POST)
 		{
-			$this->finish_client_authorization($_POST['accept'] == 'yes', $_POST);
+			$this->oauth->finish_client_authorization($_POST['accept'] == 'yes', $_POST);
 		}
 
 		$response_body = View::factory('oauth2/authorize');
@@ -18,7 +18,7 @@ class Controller_OAuth2_Endpoint extends OAuth2_Server_Database {
 
 	public function action_token()
 	{
-		$this->grant_access_token();
+		$this->oauth->grant_access_token();
 	}
 
 }

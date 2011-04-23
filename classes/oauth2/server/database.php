@@ -2,7 +2,7 @@
 
 class OAuth2_Server_Database extends OAuth2_Server {
 	
-	protected function getSupportedScopes()
+	protected function get_supported_scopes()
 	{
 		return array('testing1', 'testing2');
 	}
@@ -204,4 +204,5 @@ class OAuth2_Server_Database extends OAuth2_Server {
 			return FALSE;
 		}
 	}
+	
 }
