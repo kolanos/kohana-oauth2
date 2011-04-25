@@ -1,6 +1,6 @@
-<?php
+<?php defined('SYSPATH') or die('No direct access allowed.');
 
-class Controller_OAuth2_Resource extends Controller {
+class Controller_OAuth2_Resource extends Controller_OAuth2 {
 
 	protected function verify_access_token($scope = NULL, $exit_not_present = TRUE, $exit_invalid = TRUE, $exit_expired = TRUE, $exit_scope = TRUE, $realm = NULL)
 	{

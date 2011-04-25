@@ -1,4 +1,4 @@
-<?php
+<?php defined('SYSPATH') or die('No direct access allowed.');
 
 class OAuth2_Client_Google extends OAuth2_Client {
 

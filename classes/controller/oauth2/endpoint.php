@@ -1,6 +1,6 @@
-<?php
+<?php defined('SYSPATH') or die('No direct access allowed.');
 
-class Controller_OAuth2_Endpoint extends Controller {
+class Controller_OAuth2_Endpoint extends Controller_OAuth2 {
 
 	public function action_authorize()
 	{

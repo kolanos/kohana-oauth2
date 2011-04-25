@@ -1,4 +1,4 @@
-<?php
+<?php defined('SYSPATH') or die('No direct access allowed.');
 
 class OAuth2_Server_Database extends OAuth2_Server {
 	
