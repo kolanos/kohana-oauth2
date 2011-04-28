@@ -12,7 +12,7 @@ class OAuth2_Server_Database extends OAuth2_Server {
 	 */
 	protected function check_client_credentials($client_id, $client_secret = NULL)
 	{
-		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Kohana::checkClientCredentials.");
+		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Server_Database::check_client_credentials.");
 
 		try
 		{
@@ -34,7 +34,7 @@ class OAuth2_Server_Database extends OAuth2_Server {
 		}
 		catch (Database_Exception $e)
 		{
-			Kohana::$log->add(Log::ERROR, "Unknown error in OAuth2_Kohana::checkClientCredentials. Message: " . $e->getMessage());
+			Kohana::$log->add(Log::ERROR, "Unknown error in OAuth2_Server_Database::check_client_credentials. Message: " . $e->getMessage());
 
 			return FALSE;
 		}
@@ -45,7 +45,7 @@ class OAuth2_Server_Database extends OAuth2_Server {
 	 */
 	protected function get_redirect_uri($client_id)
 	{
-		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Kohana::getRedirectUri.");
+		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Server_Database::get_redirect_uri.");
 
 		try
 		{
@@ -64,7 +64,7 @@ class OAuth2_Server_Database extends OAuth2_Server {
 		}
 		catch (Database_Exception $e)
 		{
-			Kohana::$log->add(Log::ERROR, "Unknown error in OAuth2_Kohana::getRedirectUri. Message: " . $e->getMessage());
+			Kohana::$log->add(Log::ERROR, "Unknown error in OAuth2_Server_Database::get_redirect_uri. Message: " . $e->getMessage());
 
 			return FALSE;
 		}
@@ -75,7 +75,7 @@ class OAuth2_Server_Database extends OAuth2_Server {
 	 */
 	protected function get_access_token($oauth_token)
 	{
-		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Kohana::get_access_token.");
+		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Server_Database::get_access_token.");
 
 		try
 		{
@@ -94,7 +94,7 @@ class OAuth2_Server_Database extends OAuth2_Server {
 		}
 		catch (Database_Exception $e)
 		{
-			Kohana::$log->add(Log::ERROR, "Unknown error in OAuth2_Kohana::get_access_token. Message: " . $e->getMessage());
+			Kohana::$log->add(Log::ERROR, "Unknown error in OAuth2_Server_Database::get_access_token. Message: " . $e->getMessage());
 
 			return FALSE;
 		}
@@ -105,7 +105,7 @@ class OAuth2_Server_Database extends OAuth2_Server {
 	 */
 	protected function set_access_token($oauth_token, $client_id, $expires, $scope = NULL)
 	{
-		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Kohana::set_access_token.");
+		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Server_Database::set_access_token.");
 
 		try
 		{
@@ -119,7 +119,7 @@ class OAuth2_Server_Database extends OAuth2_Server {
 		}
 		catch (Database_Exception $e)
 		{
-			Kohana::$log->add(Log::ERROR, "Unknown error in OAuth2_Kohana::set_access_token. Message: " . $e->getMessage());
+			Kohana::$log->add(Log::ERROR, "Unknown error in OAuth2_Server_Database::set_access_token. Message: " . $e->getMessage());
 
 			return FALSE;
 		}
@@ -131,21 +131,21 @@ class OAuth2_Server_Database extends OAuth2_Server {
 	 * Possible values:
 	 *
 	 * return array(
-	 *   OAUTH2_GRANT_TYPE_AUTH_CODE,
-	 *   OAUTH2_GRANT_TYPE_USER_CREDENTIALS,
-	 *   OAUTH2_GRANT_TYPE_ASSERTION,
-	 *   OAUTH2_GRANT_TYPE_REFRESH_TOKEN,
-	 *   OAUTH2_GRANT_TYPE_NONE,
+	 *   OAuth2::GRANT_TYPE_AUTH_CODE,
+	 *   OAuth2::GRANT_TYPE_USER_CREDENTIALS,
+	 *   OAuth2::GRANT_TYPE_ASSERTION,
+	 *   OAuth2::GRANT_TYPE_REFRESH_TOKEN,
+	 *   OAuth2::GRANT_TYPE_NONE,
 	 * );
 	 *
 	 * See http://tools.ietf.org/html/draft-ietf-oauth-v2-13 Section 1.4
 	 */
 	protected function get_supported_grant_types()
 	{
-		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Kohana::get_supported_grant_types.");
+		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Server_Database::get_supported_grant_types.");
 
 		return array(
-			OAUTH2_GRANT_TYPE_AUTH_CODE,
+			OAuth2::GRANT_TYPE_AUTH_CODE,
 		);
 	}
 
@@ -154,7 +154,7 @@ class OAuth2_Server_Database extends OAuth2_Server {
 	 */
 	protected function get_auth_code($code)
 	{
-		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Kohana::get_auth_code.");
+		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Server_Database::get_auth_code.");
 
 		try
 		{
@@ -173,7 +173,7 @@ class OAuth2_Server_Database extends OAuth2_Server {
 		}
 		catch (Database_Exception $e)
 		{
-			Kohana::$log->add(Log::ERROR, "Unknown error in OAuth2_Kohana::get_auth_code. Message: " . $e->getMessage());
+			Kohana::$log->add(Log::ERROR, "Unknown error in OAuth2_Server_Database::get_auth_code. Message: " . $e->getMessage());
 
 			return FALSE;
 		}
@@ -184,7 +184,7 @@ class OAuth2_Server_Database extends OAuth2_Server {
 	 */
 	protected function set_auth_code($code, $client_id, $redirect_uri, $expires, $scope = NULL)
 	{
-		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Kohana::setAuthCode.");
+		Kohana::$log->add(Log::DEBUG, "Entering OAuth2_Server_Database::set_auth_code.");
 
 		try
 		{
@@ -199,7 +199,7 @@ class OAuth2_Server_Database extends OAuth2_Server {
 		}
 		catch (Database_Exception $e)
 		{
-			Kohana::$log->add(Log::ERROR, "Unknown error in OAuth2_Kohana::setAuthCode. Message: " . $e->getMessage());
+			Kohana::$log->add(Log::ERROR, "Unknown error in OAuth2_Server_Database::set_auth_code. Message: " . $e->getMessage());
 
 			return FALSE;
 		}
