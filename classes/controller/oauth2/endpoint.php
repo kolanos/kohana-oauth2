@@ -11,7 +11,7 @@ class Controller_OAuth2_Endpoint extends Controller_OAuth2 {
 
 		$response_body = View::factory('oauth2/authorize');
 
-		$response_body->oauth_params = $this->get_authorize_params();
+		$response_body->oauth_params = $this->oauth->get_authorize_params();
 
 		$this->response->body($response_body);
 	}
