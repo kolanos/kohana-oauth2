@@ -8,7 +8,7 @@
  *
  * @sa <a href="https://github.com/facebook/php-sdk">Facebook PHP SDK</a>.
  */
-class OAuth2_Exception extends Kohana_Exception {
+class OAuth2_Client_Exception extends Kohana_Exception {
 
 	/**
 	 * The result from the API server that represents the exception information.
@@ -87,7 +87,7 @@ class OAuth2_Exception extends Kohana_Exception {
 	 */
 	public function __toString()
 	{
-		$str = $this->getType() . ': ';
+		$str = $this->get_type() . ': ';
 
 		if ($this->code != 0)
 		{

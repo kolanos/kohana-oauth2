@@ -209,7 +209,7 @@ abstract class OAuth2_Client {
 	 * @return
 	 *   The JSON decoded response object.
 	 *
-	 * @throws OAuth2_Exception
+	 * @throws OAuth2_Client_Exception
 	 */
 	public function api($path, $method = 'GET', $params = array())
 	{
@@ -237,7 +237,7 @@ abstract class OAuth2_Client {
 		// Results are returned, errors are thrown.
 		if (is_array($result) and isset($result['error']))
 		{
-			$e = new OAuth2_Exception($result);
+			$e = new OAuth2_Client_Exception($result);
 
 			switch ($e->get_type())
 			{
@@ -464,7 +464,7 @@ abstract class OAuth2_Client {
 	 * @return
 	 *   The JSON decoded response object.
 	 *
-	 * @throws OAuth2_Exception
+	 * @throws OAuth2_Client_Exception
 	 */
 	protected function make_oauth2_request($path, $method = 'GET', $params = array())
 	{
@@ -550,7 +550,7 @@ abstract class OAuth2_Client {
 
 		if ($result === FALSE)
 		{
-			$e = new OAuth2_Exception(array(
+			$e = new OAuth2_Client_Exception(array(
 				'code' => curl_errno($ch),
 				'message' => curl_error($ch),
 			));
