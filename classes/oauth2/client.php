@@ -92,7 +92,7 @@ abstract class OAuth2_Client {
 		unset($config['base_uri']);
 
 		// Use predefined OAuth 2.0 params, or get it from $_REQUEST.
-		foreach (array('code', 'username', 'password') as $name)
+		foreach (array('code', 'username', 'password', 'scope') as $name)
 		{
 			if (isset($config[$name]))
 				$this->set($name, $config[$name]);
