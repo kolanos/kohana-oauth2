@@ -900,8 +900,8 @@ abstract class OAuth2_Server {
 
 		// Get the stored token data (from the implementing subclass)
 		$token = $this->get_access_token($token_param);
-		if ($token === NULL)
-			return $exit_invalid ? 
+		if ( ! is_array($token))
+			return ($exit_invalid) ? 
 				$this->error_www_response_header(
 					OAuth2_Server::HTTP_UNAUTHORIZED,
 					$realm,
@@ -1097,12 +1097,12 @@ abstract class OAuth2_Server {
 				$stored = $this->get_auth_code($input['code']);
 
 				// Ensure that the input uri starts with the stored uri
-				if ($stored === NULL 
+				if ( ! is_array($stored) 
 				or (strcasecmp(substr($input['redirect_uri'], 0, strlen($stored['redirect_uri'])), $stored['redirect_uri']) !== 0)
-				or $client[0] != $stored["client_id"])
+				or $client[0] != $stored['client_id'])
 					$this->error_json_response(OAuth2_Server::HTTP_BAD_REQUEST, OAuth2_Server::ERROR_INVALID_GRANT);
 
-				if ($stored["expires"] < time())
+				if ($stored['expires'] < time())
 					$this->error_json_response(OAuth2_Server::HTTP_BAD_REQUEST, OAuth2_Server::ERROR_EXPIRED_TOKEN);
 
 				break;
@@ -1374,15 +1374,18 @@ abstract class OAuth2_Server {
 	 */
 	public function finish_client_authorization($is_authorized, $params = array())
 	{
-		$params += array(
+		/*$params += array(
 			'scope' => NULL,
 			'state' => NULL,
-		);
+		);*/
 		
 		extract($params);
 
 		if ($state !== NULL)
 			$result['query']['state'] = $state;
+
+		if ($scope !== NULL)
+			$result['query']['scope'] = $scope;
 
 		if ($is_authorized === FALSE)
 		{
