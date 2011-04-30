@@ -403,6 +403,7 @@ abstract class OAuth2_Client {
 					'client_secret' => $this->get('client_secret'),
 					'code' => $code,
 					'redirect_uri' => $this->get_current_uri(),
+					'scope'	=> $this->get('scope'),
 				)
 			), TRUE);
 		}
