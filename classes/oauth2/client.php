@@ -56,6 +56,7 @@ abstract class OAuth2_Client {
 	public function set($name, $value)
 	{
 		$this->config[$name] = $value;
+
 		return $this;
 	}
 
@@ -373,6 +374,7 @@ abstract class OAuth2_Client {
 	public function get_access_token()
 	{
 		$session = $this->get_session();
+		
 		return isset($session['access_token']) ? $session['access_token'] : NULL;
 	}
 
@@ -813,4 +815,5 @@ abstract class OAuth2_Client {
 
 		return md5($base_string);
 	}
+	
 }

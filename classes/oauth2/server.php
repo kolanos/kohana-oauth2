@@ -887,8 +887,10 @@ abstract class OAuth2_Server {
 	public function verify_access_token($scope = NULL, $exit_not_present = TRUE, $exit_invalid = TRUE, $exit_expired = TRUE, $exit_scope = TRUE, $realm = NULL)
 	{
 		$token_param = $this->get_access_token_params();
-		if ($token_param === FALSE) // Access token was not provided
-			return $exit_not_present ? 
+		
+		// Access token was not provided
+		if ($token_param === FALSE)
+			return ($exit_not_present) ? 
 				$this->error_www_response_header(
 					OAuth2_Server::HTTP_BAD_REQUEST,
 					$realm,
@@ -900,6 +902,7 @@ abstract class OAuth2_Server {
 
 		// Get the stored token data (from the implementing subclass)
 		$token = $this->get_access_token($token_param);
+		
 		if ( ! is_array($token))
 			return ($exit_invalid) ? 
 				$this->error_www_response_header(
@@ -925,7 +928,7 @@ abstract class OAuth2_Server {
 
 		// Check scope, if provided
 		// If token doesn't have a scope, it's NULL/empty, or it's insufficient, then throw an error
-		if ($scope and ( ! isset($token["scope"]) or !$token["scope"] or !$this->check_scope($scope, $token["scope"])))
+		if ($scope and ( ! isset($token['scope']) or ! $token['scope'] or ! $this->check_scope($scope, $token['scope'])))
 			return $exit_scope ? 
 				$this->error_www_response_header(
 					OAuth2_Server::HTTP_FORBIDDEN,
@@ -988,7 +991,8 @@ abstract class OAuth2_Server {
 		if ($auth_header !== FALSE)
 		{
 			// Make sure only the auth header is set
-			if (isset($_GET[OAuth2_Server::TOKEN_PARAM_NAME]) or isset($_POST[OAuth2_Server::TOKEN_PARAM_NAME]))
+			if (isset($_GET[OAuth2_Server::TOKEN_PARAM_NAME])
+			or isset($_POST[OAuth2_Server::TOKEN_PARAM_NAME]))
 				$this->error_json_response(
 					OAuth2_Server::HTTP_BAD_REQUEST,
 					OAuth2_Server::ERROR_INVALID_REQUEST,
@@ -1018,7 +1022,8 @@ abstract class OAuth2_Server {
 
 		if (isset($_GET[OAuth2_Server::TOKEN_PARAM_NAME]))
 		{
-			if (isset($_POST[OAuth2_Server::TOKEN_PARAM_NAME])) // Both GET and POST are not allowed
+			// Both GET and POST are not allowed
+			if (isset($_POST[OAuth2_Server::TOKEN_PARAM_NAME]))
 				$this->error_json_response(
 					OAuth2_Server::HTTP_BAD_REQUEST,
 					OAuth2_Server::ERROR_INVALID_REQUEST,
@@ -1067,7 +1072,7 @@ abstract class OAuth2_Server {
 		$input = filter_input_array(INPUT_POST, $filters);
 
 		// Grant Type must be specified.
-		if ( ! $input["grant_type"])
+		if ( ! $input['grant_type'])
 			$this->error_json_response(
 				OAuth2_Server::HTTP_BAD_REQUEST,
 				OAuth2_Server::ERROR_INVALID_REQUEST,
@@ -1075,24 +1080,36 @@ abstract class OAuth2_Server {
 			);
 
 		// Make sure we've implemented the requested grant type
-		if ( ! in_array($input["grant_type"], $this->get_supported_grant_types()))
-			$this->error_json_response(OAuth2_Server::HTTP_BAD_REQUEST, OAuth2_Server::ERROR_UNSUPPORTED_GRANT_TYPE);
+		if ( ! in_array($input['grant_type'], $this->get_supported_grant_types()))
+			$this->error_json_response(
+				OAuth2_Server::HTTP_BAD_REQUEST,
+				OAuth2_Server::ERROR_UNSUPPORTED_GRANT_TYPE
+			);
 
 		// Authorize the client
 		$client = $this->get_client_credentials();
 
 		if ($this->check_client_credentials($client[0], $client[1]) === FALSE)
-			$this->error_json_response(OAuth2_Server::HTTP_BAD_REQUEST, OAuth2_Server::ERROR_INVALID_CLIENT);
+			$this->error_json_response(
+				OAuth2_Server::HTTP_BAD_REQUEST,
+				OAuth2_Server::ERROR_INVALID_CLIENT
+			);
 
-		if ( ! $this->check_restricted_grant_type($client[0], $input["grant_type"]))
-			$this->error_json_response(OAuth2_Server::HTTP_BAD_REQUEST, OAuth2_Server::ERROR_UNAUTHORIZED_CLIENT);
+		if ( ! $this->check_restricted_grant_type($client[0], $input['grant_type']))
+			$this->error_json_response(
+				OAuth2_Server::HTTP_BAD_REQUEST,
+				OAuth2_Server::ERROR_UNAUTHORIZED_CLIENT
+			);
 
 		// Do the granting
 		switch ($input["grant_type"])
 		{
 			case OAuth2_Server::GRANT_TYPE_AUTH_CODE:
-				if ( ! $input["code"] or !$input["redirect_uri"])
-					$this->error_json_response(OAuth2_Server::HTTP_BAD_REQUEST, OAuth2_Server::ERROR_INVALID_REQUEST);
+				if ( ! $input['code'] or ! $input['redirect_uri'])
+					$this->error_json_response(
+						OAuth2_Server::HTTP_BAD_REQUEST,
+						OAuth2_Server::ERROR_INVALID_REQUEST
+					);
 
 				$stored = $this->get_auth_code($input['code']);
 
@@ -1100,14 +1117,20 @@ abstract class OAuth2_Server {
 				if ( ! is_array($stored) 
 				or (strcasecmp(substr($input['redirect_uri'], 0, strlen($stored['redirect_uri'])), $stored['redirect_uri']) !== 0)
 				or $client[0] != $stored['client_id'])
-					$this->error_json_response(OAuth2_Server::HTTP_BAD_REQUEST, OAuth2_Server::ERROR_INVALID_GRANT);
+					$this->error_json_response(
+						OAuth2_Server::HTTP_BAD_REQUEST,
+						OAuth2_Server::ERROR_INVALID_GRANT
+					);
 
 				if ($stored['expires'] < time())
-					$this->error_json_response(OAuth2_Server::HTTP_BAD_REQUEST, OAuth2_Server::ERROR_EXPIRED_TOKEN);
+					$this->error_json_response(
+						OAuth2_Server::HTTP_BAD_REQUEST,
+						OAuth2_Server::ERROR_EXPIRED_TOKEN
+					);
+			break;
 
-				break;
 			case OAuth2_Server::GRANT_TYPE_USER_CREDENTIALS:
-				if ( ! $input['username'] or !$input['password'])
+				if ( ! $input['username'] or ! $input['password'])
 					$this->error_json_response(
 						OAuth2_Server::HTTP_BAD_REQUEST,
 						OAuth2_Server::ERROR_INVALID_REQUEST,
@@ -1117,19 +1140,28 @@ abstract class OAuth2_Server {
 				$stored = $this->check_user_credentials($client[0], $input['username'], $input['password']);
 
 				if ($stored === FALSE)
-					$this->error_json_response(OAuth2_Server::HTTP_BAD_REQUEST, OAuth2_Server::ERROR_INVALID_GRANT);
+					$this->error_json_response(
+						OAuth2_Server::HTTP_BAD_REQUEST,
+						OAuth2_Server::ERROR_INVALID_GRANT
+					);
+			break;
 
-				break;
 			case OAuth2_Server::GRANT_TYPE_ASSERTION:
 				if ( ! $input['assertion_type'] or ! $input['assertion'])
-					$this->error_json_response(OAuth2_Server::HTTP_BAD_REQUEST, OAuth2_Server::ERROR_INVALID_REQUEST);
+					$this->error_json_response(
+						OAuth2_Server::HTTP_BAD_REQUEST,
+						OAuth2_Server::ERROR_INVALID_REQUEST
+					);
 
 				$stored = $this->check_assertion($client[0], $input['assertion_type'], $input['assertion']);
 
 				if ($stored === FALSE)
-					$this->error_json_response(OAuth2_Server::HTTP_BAD_REQUEST, OAuth2_Server::ERROR_INVALID_GRANT);
-
+					$this->error_json_response(
+						OAuth2_Server::HTTP_BAD_REQUEST,
+						OAuth2_Server::ERROR_INVALID_GRANT
+					);
 				break;
+
 			case OAuth2_Server::GRANT_TYPE_REFRESH_TOKEN:
 				if ( ! $input['refresh_token'])
 					$this->error_json_response(
@@ -1141,26 +1173,38 @@ abstract class OAuth2_Server {
 				$stored = $this->get_refresh_token($input['refresh_token']);
 
 				if ($stored === NULL or $client[0] != $stored['client_id'])
-					$this->error_json_response(OAuth2_Server::HTTP_BAD_REQUEST, OAuth2_Server::ERROR_INVALID_GRANT);
+					$this->error_json_response(
+						OAuth2_Server::HTTP_BAD_REQUEST,
+						OAuth2_Server::ERROR_INVALID_GRANT
+					);
 
 				if ($stored['expires'] < time())
-					$this->error_json_response(OAuth2_Server::HTTP_BAD_REQUEST, OAuth2_Server::ERROR_EXPIRED_TOKEN);
+					$this->error_json_response(
+						OAuth2_Server::HTTP_BAD_REQUEST,
+						OAuth2_Server::ERROR_EXPIRED_TOKEN
+					);
 
 				// store the refresh token locally so we can delete it when a new refresh token is generated
 				$this->set('_old_refresh_token', $stored['token']);
+			break;
 
-				break;
 			case OAuth2_Server::GRANT_TYPE_NONE:
 				$stored = $this->check_none_access($client[0]);
 
 				if ($stored === FALSE)
-					$this->error_json_response(OAuth2_Server::HTTP_BAD_REQUEST, OAuth2_Server::ERROR_INVALID_REQUEST);
+					$this->error_json_response(
+						OAuth2_Server::HTTP_BAD_REQUEST,
+						OAuth2_Server::ERROR_INVALID_REQUEST
+					);
 		}
 
 		// Check scope, if provided
 		if ($input['scope'] and ( ! is_array($stored) or ! isset($stored['scope'])
 		or ! $this->check_scope($input['scope'], $stored['scope'])))
-			$this->error_json_response(OAuth2_Server::HTTP_BAD_REQUEST, OAuth2_Server::ERROR_INVALID_SCOPE);
+			$this->error_json_response(
+				OAuth2_Server::HTTP_BAD_REQUEST,
+				OAuth2_Server::ERROR_INVALID_SCOPE
+			);
 
 		if ( ! $input['scope'])
 			$input['scope'] = NULL;
@@ -1169,8 +1213,7 @@ abstract class OAuth2_Server {
 
 		$response = $this->send_json_headers();
 		
-		echo $response
-			->body(json_encode($token))
+		echo $response->body(json_encode($token))
 			->send_headers()
 			->body();
 		
@@ -1197,7 +1240,10 @@ abstract class OAuth2_Server {
 	protected function get_client_credentials()
 	{
 		if (isset($_SERVER['PHP_AUTH_USER']) and $_POST and isset($_POST['client_id']))
-			$this->error_json_response(OAuth2_Server::HTTP_BAD_REQUEST, OAuth2_Server::ERROR_INVALID_CLIENT);
+			$this->error_json_response(
+				OAuth2_Server::HTTP_BAD_REQUEST,
+				OAuth2_Server::ERROR_INVALID_CLIENT
+			);
 
 		// Try basic auth
 		if (isset($_SERVER['PHP_AUTH_USER']))
@@ -1213,7 +1259,10 @@ abstract class OAuth2_Server {
 		}
 
 		// No credentials were specified
-		$this->error_json_response(OAuth2_Server::HTTP_BAD_REQUEST, OAuth2_Server::ERROR_INVALID_CLIENT);
+		$this->error_json_response(
+			OAuth2_Server::HTTP_BAD_REQUEST,
+			OAuth2_Server::ERROR_INVALID_CLIENT
+		);
 	}
 
 	// End-user/client Authorization (Section 3 of IETF Draft).
@@ -1262,7 +1311,10 @@ abstract class OAuth2_Server {
 				);
 
 			// We don't have a good URI to use
-			$this->error_json_response(OAuth2_Server::HTTP_FOUND, OAuth2_Server::ERROR_INVALID_CLIENT);
+			$this->error_json_response(
+				OAuth2_Server::HTTP_FOUND,
+				OAuth2_Server::ERROR_INVALID_CLIENT
+			);
 		}
 
 		// redirect_uri is not required if already established via other channels
@@ -1270,8 +1322,11 @@ abstract class OAuth2_Server {
 		$redirect_uri = $this->get_redirect_uri($input['client_id']);
 
 		// At least one of: existing redirect URI or input redirect URI must be specified
-		if ( ! $redirect_uri and !$input['redirect_uri'])
-			$this->error_json_response(OAuth2_Server::HTTP_FOUND, OAuth2_Server::ERROR_INVALID_REQUEST);
+		if ( ! $redirect_uri and ! $input['redirect_uri'])
+			$this->error_json_response(
+				OAuth2_Server::HTTP_FOUND,
+				OAuth2_Server::ERROR_INVALID_REQUEST
+			);
 
 		// get_redirect_uri() should return FALSE if the given client ID is invalid
 		// this probably saves us from making a separate db call, and simplifies the method set
@@ -1527,6 +1582,7 @@ abstract class OAuth2_Server {
 	private function create_auth_code($client_id, $redirect_uri, $scope = NULL)
 	{
 		$code = $this->generate_auth_code();
+		
 		$this->set_auth_code(
 			$code,
 			$client_id,
@@ -1534,6 +1590,7 @@ abstract class OAuth2_Server {
 			time() + $this->get('auth_code_lifetime', OAuth2_Server::DEFAULT_AUTH_CODE_LIFETIME),
 			$scope
 		);
+		
 		return $code;
 	}
 
@@ -1685,8 +1742,7 @@ abstract class OAuth2_Server {
 
 		$response = $this->send_json_headers();
 		
-		echo $response
-			->status($http_status_code)
+		echo $response->status($http_status_code)
 			->body(json_encode($result))
 			->send_headers()
 			->body();
@@ -1726,7 +1782,7 @@ abstract class OAuth2_Server {
 	 */
 	private function error_www_response_header($http_status_code, $realm, $error, $error_description = NULL, $error_uri = NULL, $scope = NULL)
 	{
-		$realm = $realm === NULL ? $this->get_default_authentication_realm() : $realm;
+		$realm = ($realm === NULL) ? $this->get_default_authentication_realm() : $realm;
 
 		$result = "OAuth realm='" . $realm . "'";
 
@@ -1742,8 +1798,7 @@ abstract class OAuth2_Server {
 		if ($scope)
 			$result .= ", scope='" . $scope . "'";
 
-		echo Response::factory()
-			->status($http_status_code)
+		echo Response::factory()->status($http_status_code)
 			->headers('WWW-Authenticate', $result)
 			->send_headers()
 			->body();
