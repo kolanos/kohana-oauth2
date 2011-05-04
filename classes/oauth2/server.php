@@ -1213,9 +1213,12 @@ abstract class OAuth2_Server {
 
 		$response = $this->send_json_headers();
 		
-		echo $response->body(json_encode($token))
-			->send_headers()
-			->body();
+		if (isset($_GET['callback']))
+			$response->body($_GET['callback'].'('.json_encode($token).')');		
+		else
+			$response->body(json_encode($token));
+		
+		echo $response->send_headers()->body();
 		
 		exit;
 	}
@@ -1741,10 +1744,15 @@ abstract class OAuth2_Server {
 			$result['error_uri'] = $error_uri;
 
 		$response = $this->send_json_headers();
+
+		$response->status($http_status_code);
 		
-		echo $response->status($http_status_code)
-			->body(json_encode($result))
-			->send_headers()
+		if (isset($_GET['callback']))
+			$response->body($_GET['callback'].'('.json_encode($result).')');		
+		else
+			$response->body(json_encode($result));
+		
+		echo $response->send_headers()
 			->body();
 		
 		exit;
