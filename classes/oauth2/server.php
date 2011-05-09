@@ -1002,7 +1002,7 @@ abstract class OAuth2_Server {
 			$auth_header = trim($auth_header);
 
 			// Make sure it's Token authorization
-			if (strcmp(substr($auth_header, 0, 5), 'OAuth ') !== 0)
+			if (strcmp(substr($auth_header, 0, 5), 'OAuth') !== 0)
 				$this->error_json_response(
 					OAuth2_Server::HTTP_BAD_REQUEST,
 					OAuth2_Server::ERROR_INVALID_REQUEST,
