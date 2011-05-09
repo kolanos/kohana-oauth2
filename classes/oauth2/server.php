@@ -984,7 +984,7 @@ abstract class OAuth2_Server {
 	 *
 	 * @ingroup oauth2_section_5
 	 */
-	private function get_access_token_params()
+	protected function get_access_token_params()
 	{
 		$auth_header = $this->get_authorization_header();
 
