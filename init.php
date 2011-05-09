@@ -14,7 +14,7 @@ Route::set('oauth2_resource', 'oauth2/<controller>(/<action>(/<id>))')
 /** 
  * A replacement for apache_request_headers() for Nginx, Lighttpd and other web servers
  */
-if ( ! function_exists('apache_request_headers'))
+/*if ( ! function_exists('apache_request_headers'))
 {
 	function apache_request_headers()
 	{
@@ -33,4 +33,4 @@ if ( ! function_exists('apache_request_headers'))
 
 		return $out;
 	}
-}
+}*/
