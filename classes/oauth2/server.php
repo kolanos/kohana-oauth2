@@ -1010,7 +1010,7 @@ abstract class OAuth2_Server {
 				);
 
 			// Parse the rest of the header
-			if (preg_match('/\s*OAuth\s*="(.+)"/', substr($auth_header, 5), $matches) == 0 or count($matches) < 2)
+			if (preg_match('/OAuth\s(.+)/', $auth_header, $matches) == 0 or count($matches) < 2)
 				$this->error_json_response(
 					OAuth2_Server::HTTP_BAD_REQUEST,
 					OAuth2_Server::ERROR_INVALID_REQUEST,
