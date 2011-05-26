@@ -1053,7 +1053,7 @@ abstract class OAuth2_Server {
 	 */
 	public function grant_access_token()
 	{
-		$input = Validate::factory($this->request->post())
+		$input = Validation::factory($this->request->post())
 			->rule('grant_type', 'not_empty')
 			->rule('grant_type', 'regex', array(':value', OAuth2_Server::GRANT_TYPE_REGEXP));
 
@@ -1296,7 +1296,7 @@ abstract class OAuth2_Server {
 	 */
 	public function get_authorize_params()
 	{
-		$input = Validate::factory($this->request->query())
+		$input = Validation::factory($this->request->query())
 			->rule('client_id', 'not_empty')
 			->rule('client_id', 'regex', array(':value', OAuth2_Server::CLIENT_ID_REGEXP))
 			->rule('response_type', 'not_empty')
