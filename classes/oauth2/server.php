@@ -1053,7 +1053,22 @@ abstract class OAuth2_Server {
 	 */
 	public function grant_access_token()
 	{
-		$filters = array(
+		$input = Validate::factory($this->request->post())
+			->rule('grant_type', 'not_empty')
+			->rule('grant_type', 'regex', array(':value', OAuth2_Server::GRANT_TYPE_REGEXP));
+
+		$input += array(
+			'scope'				=> NULL,
+			'code'				=> NULL,
+			'redirect_uri'		=> NULL,
+			'username'			=> NULL,
+			'password'			=> NULL,
+			'assertion_type'	=> NULL,
+			'assertion'			=> NULL,
+			'refresh_token'		=> NULL,
+		);
+
+		/*$filters = array(
 			'grant_type' => array(
 				'filter' => FILTER_VALIDATE_REGEXP,
 				'options' => array('regexp' => OAuth2_Server::GRANT_TYPE_REGEXP),
@@ -1069,10 +1084,14 @@ abstract class OAuth2_Server {
 			'refresh_token' => array('flags' => FILTER_REQUIRE_SCALAR),
 		);
 
-		$input = filter_input_array(INPUT_POST, $filters);
+		$input = filter_input_array(INPUT_POST, $filters);*/
+
+		if ( ! $input->check())
+			$errors = $input->errors();
 
 		// Grant Type must be specified.
-		if ( ! $input['grant_type'])
+		//if ( ! $input['grant_type'])
+		if (isset($errors['grant_type']))
 			$this->error_json_response(
 				OAuth2_Server::HTTP_BAD_REQUEST,
 				OAuth2_Server::ERROR_INVALID_REQUEST,
@@ -1102,7 +1121,7 @@ abstract class OAuth2_Server {
 			);
 
 		// Do the granting
-		switch ($input["grant_type"])
+		switch ($input['grant_type'])
 		{
 			case OAuth2_Server::GRANT_TYPE_AUTH_CODE:
 				if ( ! $input['code'] or ! $input['redirect_uri'])
@@ -1277,7 +1296,19 @@ abstract class OAuth2_Server {
 	 */
 	public function get_authorize_params()
 	{
-		$filters = array(
+		$input = Validate::factory($this->request->query())
+			->rule('client_id', 'not_empty')
+			->rule('client_id', 'regex', array(':value', OAuth2_Server::CLIENT_ID_REGEXP))
+			->rule('response_type', 'not_empty')
+			->rule('response_type', 'regex', array(':value', OAuth2_Server::AUTH_RESPONSE_TYPE_REGEXP));
+	
+		$input += array(
+			'redirect_uri'	=> NULL,
+			'state'			=> NULL,
+			'scope'			=> NULL,
+		);
+	
+		/*$filters = array(
 			'client_id' => array(
 				'filter' => FILTER_VALIDATE_REGEXP,
 				'options' => array('regexp' => OAuth2_Server::CLIENT_ID_REGEXP),
@@ -1293,7 +1324,10 @@ abstract class OAuth2_Server {
 			'scope' => array('flags' => FILTER_REQUIRE_SCALAR),
 		);
 
-		$input = filter_input_array(INPUT_GET, $filters);
+		$input = filter_input_array(INPUT_GET, $filters);*/
+
+		if ( ! $input->check())
+			$errors = $input->errors();
 
 		// Make sure a valid client id was supplied
 		if ( ! $input['client_id'])
