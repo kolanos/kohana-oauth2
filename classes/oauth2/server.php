@@ -1223,10 +1223,7 @@ abstract class OAuth2_Server {
 
 		$token = $this->create_access_token($client[0], $input['scope']);
 
-		$response = $this->send_json_headers();
-		$response->body(json_encode($token));	
-		echo $response->send_headers()->body();
-		exit;
+		return $token;
 	}
 
 	/**
