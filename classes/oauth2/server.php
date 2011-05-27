@@ -1312,7 +1312,7 @@ abstract class OAuth2_Server {
 
 		// Make sure a valid client id was supplied
 		if (isset($errors['client_id']))
-=		{
+		{
 			if ($input['redirect_uri'] and ! isset($errors['redirect_uri']))
 				$this->error_redirect_uri_callback(
 					$input['redirect_uri'],
