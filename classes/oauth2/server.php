@@ -352,6 +352,11 @@ abstract class OAuth2_Server {
 	protected $config = array();
 
 	/**
+	 * @var  Request instance
+	 */
+	protected $request;
+
+	/**
 	 * Returns a persistent variable.
 	 *
 	 * To avoid problems, always use lower case for persistent variable names.
@@ -844,6 +849,8 @@ abstract class OAuth2_Server {
 		{
 			$this->set($name, $value);
 		}
+	
+		$this->request = Request::current();
 	}
 
 	// Resource protecting (Section 5).
@@ -991,8 +998,8 @@ abstract class OAuth2_Server {
 		if ($auth_header !== FALSE)
 		{
 			// Make sure only the auth header is set
-			if (isset($_GET[OAuth2_Server::TOKEN_PARAM_NAME])
-			or isset($_POST[OAuth2_Server::TOKEN_PARAM_NAME]))
+			if (isset($this->request->query(OAuth2_Server::TOKEN_PARAM_NAME))
+			or isset($this->request->post(OAuth2_Server::TOKEN_PARAM_NAME)))
 				$this->error_json_response(
 					OAuth2_Server::HTTP_BAD_REQUEST,
 					OAuth2_Server::ERROR_INVALID_REQUEST,
@@ -1020,21 +1027,21 @@ abstract class OAuth2_Server {
 			return $matches[1];
 		}
 
-		if (isset($_GET[OAuth2_Server::TOKEN_PARAM_NAME]))
+		if ($this->request->query(OAuth2_Server::TOKEN_PARAM_NAME))
 		{
 			// Both GET and POST are not allowed
-			if (isset($_POST[OAuth2_Server::TOKEN_PARAM_NAME]))
+			if ($this->request->post(OAuth2_Server::TOKEN_PARAM_NAME))
 				$this->error_json_response(
 					OAuth2_Server::HTTP_BAD_REQUEST,
 					OAuth2_Server::ERROR_INVALID_REQUEST,
 					'Only send the token in GET or POST, not both'
 				);
 
-			return $_GET[OAuth2_Server::TOKEN_PARAM_NAME];
+			return $this->request->query(OAuth2_Server::TOKEN_PARAM_NAME);
 		}
 
-		if (isset($_POST[OAuth2_Server::TOKEN_PARAM_NAME]))
-			return $_POST[OAuth2_Server::TOKEN_PARAM_NAME];
+		if ($this->request->post(OAuth2_Server::TOKEN_PARAM_NAME))
+			return $this->request->post(OAuth2_Server::TOKEN_PARAM_NAME);
 
 		return FALSE;
 	}
@@ -1053,11 +1060,11 @@ abstract class OAuth2_Server {
 	 */
 	public function grant_access_token()
 	{
-		$input = Validation::factory(Request::current()->post())
-			->rule('grant_type', 'not_empty')
-			->rule('grant_type', 'regex', array(':value', OAuth2_Server::GRANT_TYPE_REGEXP));
-
-		$input += array(
+		$post = $this->request->post();
+		
+		// @todo: Scalar equivalent, replace with something better
+		$post += array(
+			'grant_type'		=> NULL,
 			'scope'				=> NULL,
 			'code'				=> NULL,
 			'redirect_uri'		=> NULL,
@@ -1067,24 +1074,10 @@ abstract class OAuth2_Server {
 			'assertion'			=> NULL,
 			'refresh_token'		=> NULL,
 		);
-
-		/*$filters = array(
-			'grant_type' => array(
-				'filter' => FILTER_VALIDATE_REGEXP,
-				'options' => array('regexp' => OAuth2_Server::GRANT_TYPE_REGEXP),
-				'flags' => FILTER_REQUIRE_SCALAR
-			),
-			'scope' => array('flags' => FILTER_REQUIRE_SCALAR),
-			'code' => array('flags' => FILTER_REQUIRE_SCALAR),
-			'redirect_uri' => array('filter' => FILTER_SANITIZE_URL),
-			'username' => array('flags' => FILTER_REQUIRE_SCALAR),
-			'password' => array('flags' => FILTER_REQUIRE_SCALAR),
-			'assertion_type' => array('flags' => FILTER_REQUIRE_SCALAR),
-			'assertion' => array('flags' => FILTER_REQUIRE_SCALAR),
-			'refresh_token' => array('flags' => FILTER_REQUIRE_SCALAR),
-		);
-
-		$input = filter_input_array(INPUT_POST, $filters);*/
+	
+		$input = Validation::factory($post)
+			->rule('grant_type', 'not_empty')
+			->rule('grant_type', 'regex', array(':value', OAuth2_Server::GRANT_TYPE_REGEXP));
 
 		if ( ! $input->check())
 			$errors = $input->errors();
@@ -1255,7 +1248,7 @@ abstract class OAuth2_Server {
 	 */
 	protected function get_client_credentials()
 	{
-		if (isset($_SERVER['PHP_AUTH_USER']) and $_POST and isset($_POST['client_id']))
+		if (isset($_SERVER['PHP_AUTH_USER']) and $this->request->post() and $this->request->post('client_id'))
 			$this->error_json_response(
 				OAuth2_Server::HTTP_BAD_REQUEST,
 				OAuth2_Server::ERROR_INVALID_CLIENT
@@ -1266,12 +1259,12 @@ abstract class OAuth2_Server {
 			return array($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
 
 		// Try POST
-		if ($_POST and isset($_POST['client_id']))
+		if ($this->request->post() and $this->request->post('client_id'))
 		{
-			if (isset($_POST['client_secret']))
-				return array($_POST['client_id'], $_POST['client_secret']);
+			if ($this->request->post('client_secret'))
+				return array($this->request->post('client_id'), $this->request->post('client_secret'));
 
-			return array($_POST['client_id'], NULL);
+			return array($this->request->post('client_id'), NULL);
 		}
 
 		// No credentials were specified
@@ -1296,43 +1289,31 @@ abstract class OAuth2_Server {
 	 */
 	public function get_authorize_params()
 	{
-		$input = Validation::factory(Request::current()->query())
-			->rule('client_id', 'not_empty')
-			->rule('client_id', 'regex', array(':value', OAuth2_Server::CLIENT_ID_REGEXP))
-			->rule('response_type', 'not_empty')
-			->rule('response_type', 'regex', array(':value', OAuth2_Server::AUTH_RESPONSE_TYPE_REGEXP));
+		$get = $this->request->query();
 	
-		$input += array(
+		// @todo: Scalar equivalent, replace with something better
+		$get += array(
+			//'client_id'		=> NULL,
+			//'response_type'	=> NULL,
 			'redirect_uri'	=> NULL,
 			'state'			=> NULL,
 			'scope'			=> NULL,
 		);
 	
-		/*$filters = array(
-			'client_id' => array(
-				'filter' => FILTER_VALIDATE_REGEXP,
-				'options' => array('regexp' => OAuth2_Server::CLIENT_ID_REGEXP),
-				'flags' => FILTER_REQUIRE_SCALAR
-			),
-			'response_type' => array(
-				'filter' => FILTER_VALIDATE_REGEXP,
-				'options' => array('regexp' => OAuth2_Server::AUTH_RESPONSE_TYPE_REGEXP),
-				'flags' => FILTER_REQUIRE_SCALAR
-			),
-			'redirect_uri' => array('filter' => FILTER_SANITIZE_URL),
-			'state' => array('flags' => FILTER_REQUIRE_SCALAR),
-			'scope' => array('flags' => FILTER_REQUIRE_SCALAR),
-		);
-
-		$input = filter_input_array(INPUT_GET, $filters);*/
+		$input = Validation::factory($get)
+			->rule('client_id', 'not_empty')
+			->rule('client_id', 'regex', array(':value', OAuth2_Server::CLIENT_ID_REGEXP))
+			->rule('response_type', 'not_empty')
+			->rule('response_type', 'regex', array(':value', OAuth2_Server::AUTH_RESPONSE_TYPE_REGEXP))
+			->rule('redirect_uri', 'url');
 
 		if ( ! $input->check())
 			$errors = $input->errors();
 
 		// Make sure a valid client id was supplied
-		if ( ! $input['client_id'])
-		{
-			if ($input['redirect_uri'])
+		if (isset($errors['client_id']))
+=		{
+			if ($input['redirect_uri'] and ! isset($errors['redirect_uri']))
 				$this->error_redirect_uri_callback(
 					$input['redirect_uri'],
 					OAuth2_Server::ERROR_INVALID_CLIENT,
@@ -1390,7 +1371,7 @@ abstract class OAuth2_Server {
 		}
 
 		// type and client_id are required
-		if ( ! $input['response_type'])
+		if (isset($errors['response_type']))
 			$this->error_redirect_uri_callback(
 				$input['redirect_uri'],
 				OAuth2_Server::ERROR_INVALID_REQUEST,
