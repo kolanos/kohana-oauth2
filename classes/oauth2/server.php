@@ -998,8 +998,8 @@ abstract class OAuth2_Server {
 		if ($auth_header !== FALSE)
 		{
 			// Make sure only the auth header is set
-			if (isset($this->request->query(OAuth2_Server::TOKEN_PARAM_NAME))
-			or isset($this->request->post(OAuth2_Server::TOKEN_PARAM_NAME)))
+			if ($this->request->query(OAuth2_Server::TOKEN_PARAM_NAME)
+			or $this->request->post(OAuth2_Server::TOKEN_PARAM_NAME))
 				$this->error_json_response(
 					OAuth2_Server::HTTP_BAD_REQUEST,
 					OAuth2_Server::ERROR_INVALID_REQUEST,
