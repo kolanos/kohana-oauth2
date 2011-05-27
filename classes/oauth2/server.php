@@ -1064,7 +1064,7 @@ abstract class OAuth2_Server {
 		
 		// @todo: Scalar equivalent, replace with something better
 		$post += array(
-			'grant_type'		=> NULL,
+			//'grant_type'		=> NULL,
 			'scope'				=> NULL,
 			'code'				=> NULL,
 			'redirect_uri'		=> NULL,
